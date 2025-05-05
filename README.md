@@ -2,21 +2,21 @@
 
 Cinema ticket service.
 
-### Techstack
+## Techstack
 
 - Avalonia UI
 - Postgres (docker-compose)
 
-### How to run
+## How to run
 
 ```bash
 docker-compose up
 dotnet run
 ```
 
-### Database
+## Database
 
-#### User Table
+### User Table
 
 | Column   | Type     | Description       |
 |----------|----------|-------------------|
@@ -28,7 +28,7 @@ dotnet run
 
 ---
 
-#### Ticket Table
+### Ticket Table
 
 | Column       | Type     | Description                        |
 |--------------|----------|------------------------------------|
@@ -40,7 +40,7 @@ dotnet run
 
 ---
 
-#### Movie Table
+### Movie Table
 
 | Column      | Type     | Description             |
 |-------------|----------|-------------------------|
@@ -51,7 +51,7 @@ dotnet run
 
 ---
 
-#### Room Table
+### Room Table
 
 | Column   | Type     | Description        |
 |----------|----------|--------------------|
@@ -60,7 +60,7 @@ dotnet run
 
 ---
 
-#### Seat Table
+### Seat Table
 
 | Column  | Type     | Description                 |
 |---------|----------|-----------------------------|
@@ -71,7 +71,7 @@ dotnet run
 
 ---
 
-#### Screening Table
+### Screening Table
 
 | Column   | Type     | Description               |
 |----------|----------|---------------------------|
