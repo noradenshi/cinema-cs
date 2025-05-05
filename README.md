@@ -14,40 +14,68 @@ docker-compose up
 dotnet run
 ```
 
-### Tables
+### Database
 
-User:
-id
-name
-surname
-phone
-password
+#### User Table
 
-Ticket:
-id
-screening_id
-seat_id
-price
-owner_id  nullable
+| Column   | Type     | Description       |
+|----------|----------|-------------------|
+| id       | int      | Primary key       |
+| name     | string   | First name        |
+| surname  | string   | Last name         |
+| phone    | string   | Phone number      |
+| password | string   | Hashed password   |
 
-Movie:
-id
-title
-description
-length
+---
 
-Room:
-id
-capacity
+#### Ticket Table
 
-Seat:
-id
-room_id
-row
-number 
+| Column       | Type     | Description                        |
+|--------------|----------|------------------------------------|
+| id           | int      | Primary key                        |
+| screening_id | int      | Foreign key to Screening           |
+| seat_id      | int      | Foreign key to Seat                |
+| price        | decimal  | Ticket price                       |
+| owner_id     | int?     | Nullable, foreign key to User      |
 
-Screening:
-id
-movie_id
-room_id
-date
+---
+
+#### Movie Table
+
+| Column      | Type     | Description             |
+|-------------|----------|-------------------------|
+| id          | int      | Primary key             |
+| title       | string   | Movie title             |
+| description | string   | Movie description       |
+| length      | int      | Duration in minutes     |
+
+---
+
+#### Room Table
+
+| Column   | Type     | Description        |
+|----------|----------|--------------------|
+| id       | int      | Primary key        |
+| capacity | int      | Number of seats    |
+
+---
+
+#### Seat Table
+
+| Column  | Type     | Description                 |
+|---------|----------|-----------------------------|
+| id      | int      | Primary key                 |
+| room_id | int      | Foreign key to Room         |
+| row     | string   | Row label (e.g., "A", "B")  |
+| number  | int      | Seat number within the row  |
+
+---
+
+#### Screening Table
+
+| Column   | Type     | Description               |
+|----------|----------|---------------------------|
+| id       | int      | Primary key               |
+| movie_id | int      | Foreign key to Movie      |
+| room_id  | int      | Foreign key to Room       |
+| date     | datetime | Screening date and time   |
