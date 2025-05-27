@@ -1,0 +1,25 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace cinema_cs.Models
+{
+    public class Ticket
+    {
+        [Key, Column(Order = 0)]
+        public int ScreeningId { get; set; }
+
+        [Key, Column(Order = 1)]
+        public int SeatId { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Price { get; set; }
+
+        public int OwnerId { get; set; }
+
+        public required Screening Screening { get; set; }
+
+        public required Seat Seat { get; set; }
+
+        public required User Owner { get; set; }
+    }
+}

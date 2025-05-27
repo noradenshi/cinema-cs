@@ -1,0 +1,53 @@
+﻿@page
+@model IndexModel
+@{
+ViewData["Title"] = "Home";
+var today = DateTime.Today;
+}
+
+<div class="container d-flex justify-content-center py-5">
+    <div class="w-100" style="max-width: 1000px;">
+        <h2 class="fw-bold mb-4 text-center">Now Playing</h2>
+
+        <div class="d-flex gap-2 justify-content-center mb-4 flex-wrap">
+            @for (int i = 0; i < 7; i++) { var date=today.AddDays(i); var
+                isActive=date.Date==(Request.Query.ContainsKey("date") && DateTime.TryParse(Request.Query["date"], out
+                var selectedDate) ? selectedDate.Date : today).Date; <a href="?date=@date.ToString("yyyy-MM-dd")"
+                class="btn btn-outline-primary@(isActive ? " active" : "" )">
+                @date.ToString("ddd, MMM d")
+                </a>
+                }
+        </div>
+
+
+        <!-- Screenings Table -->
+        <div class="table-responsive bg-light rounded shadow-sm p-3">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Movie</th>
+                        <th>Screenings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var movie in Model.Movies)
+                    {
+                    <tr>
+                        <td class="fw-semibold" style="width:120pt">@movie.Title</td>
+                        <td>
+                            @foreach (var screening in movie.Screenings)
+                            {
+                            <a href="@Url.Page(" Screening", new { id=screening.Id })"
+                                class="btn btn-sm btn-primary me-1 mb-1" style="width:90pt">
+                                <big>@screening.Date.ToString("HH:mm")</big>
+                                <div><small>@screening.Type</small></div>
+                            </a>
+                            }
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -4,7 +4,7 @@ Cinema ticket service.
 
 ## Techstack
 
-- Avalonia UI
+- .ASP
 - Postgres (docker-compose)
 
 ## How to run
@@ -24,6 +24,7 @@ dotnet run
 | name     | string   | First name        |
 | surname  | string   | Last name         |
 | phone    | string   | Phone number      |
+| email    | string   | Email address     |
 | password | string   | Hashed password   |
 
 ---
@@ -32,11 +33,10 @@ dotnet run
 
 | Column       | Type     | Description                        |
 |--------------|----------|------------------------------------|
-| id           | int      | Primary key                        |
-| screening_id | int      | Foreign key to Screening           |
-| seat_id      | int      | Foreign key to Seat                |
+| screening_id | int      | (PK) Foreign key to Screening      |
+| seat_id      | int      | (PK) Foreign key to Seat           |
 | price        | decimal  | Ticket price                       |
-| owner_id     | int?     | Nullable, foreign key to User      |
+| owner_id     | int      | Foreign key to User                |
 
 ---
 
