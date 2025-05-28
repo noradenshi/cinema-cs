@@ -1,0 +1,45 @@
+@page
+@model cinema_cs.Pages.UpcomingModel
+@{
+    ViewData["Title"] = "Upcoming Movies";
+
+    var moviesByMonth = Model.UpcomingMovies
+        .GroupBy(m => new { m.Premiere.Year, m.Premiere.Month })
+        .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month);
+}
+
+<div class="container mx-auto max-w-4xl p-6">
+    <h1 class="text-3xl font-bold mb-6 text-center">Upcoming Movies</h1>
+
+    @if (Model.UpcomingMovies.Any())
+    {
+        foreach (var group in moviesByMonth)
+        {
+            var monthName = new DateTime(group.Key.Year, group.Key.Month, 1).ToString("MMMM yyyy");
+            <h2 class="text-2xl font-semibold mt-8 mb-4 border-b pb-1">@monthName</h2>
+
+            foreach (var movie in group)
+            {
+                <div class="movie-card">
+                    <div class="movie-card-left">
+                        <h3>@movie.Title</h3>
+                        <p>
+                            📅 Premiere: @movie.Premiere.ToString("d")<br />
+                            ⏱️ Duration: @movie.Length min
+                        </p>
+                    </div>
+
+                    <!-- Right column: Description -->
+                    <div class="movie-card-right">
+                        <p>@movie.Description</p>
+                    </div>
+                </div>
+
+            }
+        }
+    }
+    else
+    {
+        <p class="text-center text-gray-600">No upcoming movies found.</p>
+    }
+</div>

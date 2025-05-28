@@ -29,3 +29,26 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.movie-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.movie-card-left {
+    width: 50%;
+    padding-right: 1rem;
+}
+
+.movie-card-right {
+    width: 50%;
+}

@@ -10,7 +10,7 @@ Cinema ticket service.
 ## How to run
 
 ```bash
-docker-compose up
+docker-compose up -d
 dotnet run
 ```
 
