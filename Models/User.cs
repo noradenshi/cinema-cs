@@ -21,6 +21,6 @@ namespace cinema_cs.Models
         [Required]
         public required string Password { get; set; } // Hashed password
 
-        public required ICollection<Ticket> Tickets { get; set; }
+        public ICollection<Ticket>? Tickets { get; set; }
     }
 }

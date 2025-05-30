@@ -1,0 +1,65 @@
+@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container d-flex justify-content-center py-5 text-light">
+    <div class="w-100" style="max-width: 400px;">
+        <h2 class="text-center mb-4">Login</h2>
+
+        <form method="post" class="form p-4 rounded shadow-sm">
+            <div class="mb-3">
+                <label asp-for="Input.Email" class="form-label">Email</label>
+                <input asp-for="Input.Email" class="form-control bg-dark text-light" />
+                <span asp-validation-for="Input.Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Password" class="form-label">Password</label>
+                <input asp-for="Input.Password" type="password" class="form-control bg-dark text-light" />
+                <span asp-validation-for="Input.Password" class="text-danger small"></span>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn">Login</button>
+            </div>
+
+            <div class="text-center mt-3">
+                <a href="/Register" class="link-light">Don't have an account? Register</a>
+            </div>
+        </form>
+    </div>
+</div>
+<style>
+    .form {
+        background-color: #323035;
+        background: #323035;
+    }
+
+    .form-control:focus {
+        background-color: #2b2a2e;
+        border-color: #575459;
+        color: #fff;
+
+        /* Remove the default blue glow */
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.1); /* optional soft glow */
+    }
+
+    .btn {
+        background-color: #424045;
+        color: #fff;
+        border: none;
+    }
+
+    .btn:hover {
+        background-color: #575459;
+        color: #fff;
+    }
+
+    .link-light:hover {
+        color: #ccc;
+        text-decoration: underline;
+    }
+</style>
