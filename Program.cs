@@ -9,6 +9,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddRazorPages();
 
+// Add authentication and cookie scheme
+builder.Services.AddAuthentication("Auth")
+    .AddCookie("Auth", options =>
+    {
+        options.LoginPath = "/Login"; // or wherever your login page is
+        options.LogoutPath = "/Logout";
+        options.AccessDeniedPath = "/AccessDenied";
+    });
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -29,6 +40,7 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
