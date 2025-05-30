@@ -14,7 +14,7 @@ namespace cinema_cs.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 
-        public int OwnerId { get; set; }
+        public string OwnerId { get; set; } = default!;
 
         public required Screening Screening { get; set; }
 

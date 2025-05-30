@@ -2,18 +2,21 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Identity;
-using cinema_cs.Data;
 using cinema_cs.Models;
 
 namespace cinema_cs.Pages
 {
     public class RegisterModel : PageModel
     {
-        private readonly AppDbContext _context;
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly ILogger<RegisterModel> _logger;
 
-        public RegisterModel(AppDbContext context)
+        public RegisterModel(SignInManager<User> signInManager, UserManager<User> userManager, ILogger<RegisterModel> logger)
         {
-            _context = context;
+            _signInManager = signInManager;
+            _userManager = userManager;
+            _logger = logger;
         }
 
         [BindProperty]
@@ -48,33 +51,41 @@ namespace cinema_cs.Pages
             public string ConfirmPassword { get; set; } = string.Empty;
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
                 return Page();
 
-            // Check if email already exists
-            if (_context.Users.Any(u => u.Email == Input.Email))
+            // Check if email already exists using Identity
+            var existingUser = await _userManager.FindByEmailAsync(Input.Email);
+            if (existingUser != null)
             {
                 ModelState.AddModelError(string.Empty, "Email is already registered.");
                 return Page();
             }
 
-            // Create new user
             var user = new User
             {
+                Email = Input.Email,
+                UserName = Input.Email,
                 Name = Input.Name,
                 Surname = Input.Surname,
                 Phone = Input.Phone,
-                Email = Input.Email,
-                Password = "",
             };
 
-            var hasher = new PasswordHasher<User>();
-            user.Password = hasher.HashPassword(user, Input.Password);
+            var result = await _userManager.CreateAsync(user, Input.Password);
+            _logger.LogInformation($"User creation succeeded? {result.Succeeded}");
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                    _logger.LogWarning($"User creation error: {error.Description}");
+                }
+                return Page();
+            }
 
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            _logger.LogInformation("User created successfully: {Email}", Input.Email);
 
             return RedirectToPage("/Login");
         }

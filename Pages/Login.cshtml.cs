@@ -2,79 +2,66 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using cinema_cs.Data;
 using cinema_cs.Models;
-using System.Security.Claims;
 
-public class LoginModel : PageModel
+namespace cinema_cs.Pages
 {
-    private readonly AppDbContext _context;
-
-    public LoginModel(AppDbContext context)
+    public class LoginModel : PageModel
     {
-        _context = context;
-    }
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
 
-    [BindProperty]
-    public InputModel Input { get; set; }
-
-    public string? ErrorMessage { get; set; }
-
-    public class InputModel
-    {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
-    }
-
-    public void OnGet()
-    {
-        // Initial page load
-    }
-
-    public async Task<IActionResult> OnPostAsync()
-    {
-        if (!ModelState.IsValid)
+        public LoginModel(SignInManager<User> signInManager, UserManager<User> userManager)
         {
-            return Page();
+            _signInManager = signInManager;
+            _userManager = userManager;
         }
 
-        var user = _context.Users.FirstOrDefault(u => u.Email == Input.Email);
+        [BindProperty]
+        public InputModel Input { get; set; }
 
-        if (user == null)
+        public string? ErrorMessage { get; set; }
+
+        public class InputModel
         {
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            return Page();
+            [Required]
+            [EmailAddress]
+            public string Email { get; set; }
+
+            [Required]
+            [DataType(DataType.Password)]
+            public string Password { get; set; }
         }
 
-        var hasher = new PasswordHasher<User>();
-        var result = hasher.VerifyHashedPassword(user, user.Password, Input.Password);
-
-        if (result == PasswordVerificationResult.Failed)
+        public void OnGet()
         {
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            return Page();
+            // Initial page load
         }
 
-        var claims = new List<Claim>
+        public async Task<IActionResult> OnPostAsync()
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Email),
-            new Claim(ClaimTypes.Name, user.Name),
-            new Claim("FullName", $"{user.Name} {user.Surname}"),
-        };
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
 
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        var principal = new ClaimsPrincipal(identity);
+            var user = await _userManager.FindByEmailAsync(Input.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return Page();
+            }
 
-        await HttpContext.SignInAsync("Auth", principal);
+            // Attempt password sign-in (checks password, lockout, etc.)
+            var result = await _signInManager.PasswordSignInAsync(user.Email!, Input.Password, isPersistent: false, lockoutOnFailure: false);
 
-        return RedirectToPage("/Index");
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return Page();
+            }
+
+            return RedirectToPage("/Index");
+        }
     }
 }
-

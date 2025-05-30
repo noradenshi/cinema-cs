@@ -1,30 +1,37 @@
 using cinema_cs.Data;
+using cinema_cs.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure logging (optional, for extra control)
+builder.Logging.ClearProviders(); // Optional: clear default providers if you want only specific ones
+builder.Logging.AddConsole();     // Add console logger
+builder.Logging.AddDebug();       // Add debug logger (useful in Visual Studio)
+builder.Logging.SetMinimumLevel(LogLevel.Information); // Adjust as needed
 
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddRazorPages();
-
-// Add authentication and cookie scheme
-builder.Services.AddAuthentication("Auth")
-    .AddCookie("Auth", options =>
-    {
-        options.LoginPath = "/Login"; // or wherever your login page is
-        options.LogoutPath = "/Logout";
-        options.AccessDeniedPath = "/AccessDenied";
-    });
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultTokenProviders();
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.Migrate(); // <-- Ensure migrations are applied at startup
     DbInitializer.Seed(context);
 }
 

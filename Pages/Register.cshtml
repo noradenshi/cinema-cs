@@ -9,6 +9,8 @@
         <h2 class="text-center mb-4">Create Account</h2>
 
         <form method="post" class="form p-4 rounded shadow-sm">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
             <div class="mb-3">
                 <label asp-for="Input.Name" class="form-label">Name</label>
                 <input asp-for="Input.Name" class="form-control bg-dark text-light" />
