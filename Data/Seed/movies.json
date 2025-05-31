@@ -1,0 +1,80 @@
+[
+  {
+    "Title": "Inception",
+    "Description": "A skilled thief leads a team into people's dreams to steal secrets.",
+    "Length": 148,
+    "Premiere": "2025-05-31T00:00:00"
+  },
+  {
+    "Title": "The Matrix",
+    "Description": "A computer hacker learns the world is a simulation and joins a rebellion.",
+    "Length": 136,
+    "Premiere": "2025-05-31T00:00:00"
+  },
+  {
+    "Title": "Interstellar",
+    "Description": "A team of explorers travels through a wormhole in search of a new home for humanity.",
+    "Length": 169,
+    "Premiere": "2025-05-31T00:00:00"
+  },
+  {
+    "Title": "Captain America: The Winter Soldier",
+    "Description": "Steve Rogers teams up with Black Widow to battle a new threat from within S.H.I.E.L.D.",
+    "Length": 136,
+    "Premiere": "2025-06-01T00:00:00"
+  },
+  {
+    "Title": "Captain America: Civil War",
+    "Description": "Captain America and Iron Man lead opposing factions of the Avengers over government oversight.",
+    "Length": 147,
+    "Premiere": "2025-06-02T00:00:00"
+  },
+  {
+    "Title": "Maze Runner",
+    "Description": "A young man wakes up in a mysterious maze with no memory and must find a way out.",
+    "Length": 113,
+    "Premiere": "2025-06-03T00:00:00"
+  },
+  {
+    "Title": "Silent Voice",
+    "Description": "A young man seeks redemption by reconnecting with a deaf girl he once bullied.",
+    "Length": 130,
+    "Premiere": "2025-06-04T00:00:00"
+  },
+  {
+    "Title": "Isle of Dogs",
+    "Description": "In a dystopian future, a boy searches for his lost dog on an island inhabited by exiled canines.",
+    "Length": 101,
+    "Premiere": "2025-06-05T00:00:00"
+  },
+  {
+    "Title": "Everything Everywhere All at Once",
+    "Description": "A laundromat owner is swept into an insane adventure where she alone can save existence by exploring other universes.",
+    "Length": 139,
+    "Premiere": "2025-06-05T00:00:00"
+  },
+  {
+    "Title": "The Platform",
+    "Description": "In a future dystopia, prisoners housed in vertical cells watch as inmates in the upper cells are fed while those below starve.",
+    "Length": 94,
+    "Premiere": "2025-06-06T00:00:00"
+  },
+  {
+    "Title": "The Amazing Spider-Man",
+    "Description": "After Peter Parker is bitten by a genetically altered spider, he gains newfound, spider-like powers and ventures out to save the city.",
+    "Length": 136,
+    "Premiere": "2025-06-08T00:00:00"
+  },
+  {
+    "Title": "Gifted",
+    "Description": "A single man raises his niece, a child prodigy, and faces a custody battle with his mother.",
+    "Length": 101,
+    "Premiere": "2025-06-07T00:00:00"
+  },
+  {
+    "Title": "I'm Not Here",
+    "Description": "A man reflects on his life and the choices that led him to where he is now.",
+    "Length": 94,
+    "Premiere": "2025-06-13T00:00:00"
+  }
+]

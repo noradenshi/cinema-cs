@@ -45,7 +45,7 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     context.Database.Migrate(); // <-- Ensure migrations are applied at startup
-    DbInitializer.Seed(context);
+    await DbInitializer.SeedAsync(context);
 }
 
 // Configure the HTTP request pipeline.

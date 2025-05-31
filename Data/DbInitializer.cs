@@ -1,42 +1,33 @@
+using System.Text.Json;
 using cinema_cs.Models;
 
 namespace cinema_cs.Data
 {
     public static class DbInitializer
     {
-        private static string GenerateMovieTitle(Random rand)
-        {
-            var adjectives = new[] { "Silent", "Dark", "Lost", "Final", "Hidden", "Broken", "Furious", "Eternal" };
-            var nouns = new[] { "Empire", "Journey", "Truth", "Shadow", "Destiny", "Secret", "Horizon", "Code" };
-            var suffixes = new[] { "", "", "", ": Reloaded", ": Redemption", ": The Beginning", ": Awakening" };
-
-            var title = $"{adjectives[rand.Next(adjectives.Length)]} {nouns[rand.Next(nouns.Length)]}{suffixes[rand.Next(suffixes.Length)]}";
-            return title;
-        }
-
-        public static void Seed(AppDbContext context)
+        public static async Task SeedAsync(AppDbContext context)
         {
             if (context.Movies.Any())
                 return; // DB has been seeded
 
-            var rng = new Random();
+            var json = await System.IO.File.ReadAllTextAsync("Data/Seed/movies.json");
+            var movies = JsonSerializer.Deserialize<List<Movie>>(json);
 
-            // --- ROOMS ---
-            var rooms = new List<Room>
-            {
-                new() { Capacity = 100 },
-                new() { Capacity = 80 },
-                new() { Capacity = 60 }
-            };
+            if (movies == null || movies.Count == 0)
+                throw new Exception("No movies found in JSON or deserialization failed.");
+
+            context.Movies.AddRange(movies);
+
+            var rooms = new List<Room> { new(), new(), new() };
             context.Rooms.AddRange(rooms);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             var seats = new List<Seat>();
             foreach (var room in rooms)
             {
-                for (char row = 'A'; row <= 'D'; row++) // Rows A to D inclusive
+                for (char row = 'A'; row <= 'D'; row++)
                 {
-                    for (int number = 1; number <= 10; number++) // Seat numbers 1 to 10
+                    for (int number = 1; number <= 10; number++)
                     {
                         seats.Add(new Seat
                         {
@@ -48,62 +39,53 @@ namespace cinema_cs.Data
                 }
             }
             context.Seats.AddRange(seats);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
-            // --- ACTIVE MOVIES (10 released this week or earlier) ---
-            var now = DateTime.UtcNow;
-            var activeMovies = new List<Movie>();
+            var screenings = new List<Screening>();
+            var random = new Random();
+            var today = DateTime.Today;
+            int daysToGenerate = 7; // adjust as needed
 
-            for (int i = 0; i < 10; i++)
+            for (int dayOffset = 0; dayOffset < daysToGenerate; dayOffset++)
             {
-                var premiere = now.AddDays(-rng.Next(0, 7)); // within the past week
-                var movie = new Movie
-                {
-                    Title = GenerateMovieTitle(rng),
-                    Description = $"Description for Movie {i + 1}",
-                    Length = rng.Next(90, 150),
-                    Premiere = premiere,
-                    Screenings = new List<Screening>()
-                };
+                var currentDate = today.AddDays(dayOffset);
 
-                // 14 days of screenings
-                for (int dayOffset = 0; dayOffset < 14; dayOffset++)
+                // Get only premiered movies
+                var premieredMovies = movies
+                    .Where(m => m.Premiere <= currentDate.Date)
+                    .ToList();
+
+                foreach (var room in rooms)
                 {
-                    int screeningsToday = rng.Next(3, 6); // 3-5 per day
-                    for (int j = 0; j < screeningsToday; j++)
+                    var currentTime = currentDate.AddHours(10); // start at 10:00
+
+                    while (currentTime.Hour < 22)
                     {
-                        var time = now.Date.AddDays(dayOffset).AddHours(10 + j * 2); // 10:00, 12:00, etc.
-                        movie.Screenings.Add(new Screening
+                        // Pick a random movie that fits
+                        var movie = premieredMovies[random.Next(premieredMovies.Count)];
+
+                        // Screening end time with 1 hour break
+                        var nextAvailableTime = currentTime.AddMinutes(movie.Length + 60);
+
+                        // If next screening would exceed 22:00, break
+                        if (nextAvailableTime.Hour >= 22 && nextAvailableTime.Minute > 0)
+                            break;
+
+                        screenings.Add(new Screening
                         {
-                            Date = time,
-                            Type = (ScreeningType)rng.Next(0, 3),
-                            Room = rooms[rng.Next(rooms.Count)],
+                            MovieId = movie.Id,
+                            RoomId = room.Id,
+                            Type = (ScreeningType)random.Next(0, 3), // Original, Dubbed, Subtitled
+                            Date = currentTime
                         });
+
+                        currentTime = nextAvailableTime;
                     }
                 }
-
-                activeMovies.Add(movie);
             }
-            context.Movies.AddRange(activeMovies);
 
-            // --- UPCOMING MOVIES (10 releasing > 1 week from now but this year) ---
-            var upcomingMovies = new List<Movie>();
-
-            for (int i = 0; i < 10; i++)
-            {
-                var futureDate = now.AddDays(rng.Next(8, 180)); // More than a week away, this year
-                upcomingMovies.Add(new Movie
-                {
-                    Title = GenerateMovieTitle(rng),
-                    Description = $"Upcoming release {i + 1}",
-                    Length = rng.Next(90, 150),
-                    Premiere = futureDate,
-                    Screenings = new List<Screening>()
-                });
-            }
-            context.Movies.AddRange(upcomingMovies);
-
-            context.SaveChanges();
+            context.Screenings.AddRange(screenings);
+            await context.SaveChangesAsync();
         }
     }
 }

@@ -17,26 +17,34 @@ namespace cinema_cs.Pages
         public List<Movie> Movies { get; set; } = new();
 
         // Store the selected date (default to today)
-        public DateTime SelectedDate { get; set; } = DateTime.UtcNow.Date;
+        public DateTime SelectedDate { get; set; } = DateTime.UtcNow;
 
         public void OnGet(DateTime? date)
         {
-            Console.WriteLine(SelectedDate);
-            SelectedDate = date?.Date ?? DateTime.UtcNow.Date;
+            SelectedDate = date?.Date ?? DateTime.UtcNow;
+
+            var dayStart = SelectedDate.Date;
+            var dayEnd = dayStart.AddDays(1);
 
             Movies = _context.Movies
-                .Where(m => m.Screenings.Any(s =>
-                    s.Date >= SelectedDate && s.Date < SelectedDate.AddDays(1)))
-                .Include(m => m.Screenings)
+                .Where(m => m.Screenings.Any(s => s.Date >= dayStart && s.Date < dayEnd))
+                .Include(m => m.Screenings
+                    .Where(s => s.Date >= dayStart && s.Date < dayEnd))
                 .ToList();
 
+            // Screenings are already filtered in the query above, but you can still order them:
             foreach (var movie in Movies)
             {
                 movie.Screenings = movie.Screenings
-                    .Where(s => s.Date.Date == SelectedDate)
+                    .OrderBy(s => s.Date)
                     .ToList();
             }
-        }
 
-    };
+            var allScreeningsToday = _context.Screenings
+                .Where(s => s.Date >= dayStart && s.Date < dayEnd)
+                .ToList();
+
+            Console.WriteLine($"Screenings found for {SelectedDate:d}: {allScreeningsToday.Count}");
+        }
+    }
 }
