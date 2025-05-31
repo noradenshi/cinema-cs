@@ -1,0 +1,123 @@
+@page "{id:int}"
+@model cinema_cs.Pages.ScreeningModel
+@{
+    ViewData["Title"] = "Select Seats";
+}
+
+<div class="container py-5 text-light">
+    <h2 class="mb-4">Select Your Seats</h2>
+    <h4 class="mb-4">Room @Model.Screening.Room.Id</h4>
+
+    <form method="post">
+        <div class="row">
+            <div class="col-12 col-lg-8 mb-4">
+                <div class="bg-custom p-3 rounded shadow-sm">
+                    <div class="seat-grid-container">
+                        <div class="seat-grid">
+                            @foreach (var seat in Model.AllSeats)
+                            {
+                                var seatId = seat.Id;
+                                var isTaken = Model.TakenSeatIds.Contains(seatId);
+                                var label = $"{seat.Row}{seat.Number}";
+                                <div class="seat">
+                                    <input type="checkbox" name="SelectedSeats"
+                                           value="@seatId"
+                                           id="seat-@seatId"
+                                           class="btn-check"
+                                           @(isTaken ? "disabled data-taken=\"true\"" : "") />
+                                    <label class="btn btn-sm @(isTaken ? "btn-secondary" : "btn-outline-light")"
+                                           for="seat-@seatId"
+                                           style="min-width: 45px;">
+                                        @label
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <div class="bg-custom rounded shadow-sm p-3">
+                    <h5>Summary</h5>
+                    <p>Price per ticket: <strong>@Model.PricePerTicket.ToString("0.00") PLN</strong></p>
+                    @if (Model.MaxSeats == 8)
+                    {
+                        <p>You can select up to @Model.MaxSeats tickets.</p>
+                    }
+                    else
+                    {
+                        <p>You can select up to @Model.MaxSeats more tickets.</p>
+                    }
+                    <h4 id="totalPrice" class="ms-1">@Model.PricePerTicket.ToString("C")</h4>
+                    <button type="submit" class="btn btn-success mt-3 w-100">Confirm Selection</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    .seat-grid-container {
+        overflow-x: auto;
+        text-align: center;
+    }
+
+    .seat-grid {
+        display: inline-grid; /* inline to allow centering */
+        grid-template-columns: repeat(10, auto);
+        gap: 4px;
+        justify-content: center;
+        min-width: max-content;
+    }
+
+    .seat {
+        display: inline-block;
+    }
+
+    .seat label {
+        display: inline-block;
+        min-width: 45px;
+        padding: 0.5rem 0.75rem;
+        text-align: center;
+        font-size: 0.85rem;
+    }
+</style>
+
+@section Scripts {
+<script>
+    const maxSeats = @Model.MaxSeats;
+    const pricePerTicket = @Model.PricePerTicket;
+    const checkboxes = document.querySelectorAll('input[name="SelectedSeats"]');
+    const totalPriceSpan = document.getElementById('totalPrice');
+
+    function updateUI() {
+        const selected = [...checkboxes].filter(cb => cb.checked);
+        const total = selected.length * pricePerTicket;
+
+        // Update total price display
+        totalPriceSpan.textContent = total.toLocaleString(undefined, {
+            style: 'currency',
+            currency: 'PLN'
+        });
+
+        const maxReached = selected.length >= maxSeats;
+
+        checkboxes.forEach(cb => {
+            // Determine if this checkbox is for a seat that's permanently disabled (already taken)
+            const isTaken = cb.dataset.taken === "true";
+
+            // Only modify if it's not taken
+            if (!isTaken) {
+                cb.disabled = maxReached && !cb.checked;
+            }
+        });
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateUI);
+    });
+
+    updateUI();
+</script>
+}

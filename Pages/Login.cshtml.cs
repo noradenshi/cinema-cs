@@ -38,8 +38,10 @@ namespace cinema_cs.Pages
             // Initial page load
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
         {
+            returnUrl ??= Url.Content("~/");
+
             if (!ModelState.IsValid)
             {
                 return Page();
@@ -61,7 +63,8 @@ namespace cinema_cs.Pages
                 return Page();
             }
 
-            return RedirectToPage("/Index");
+            // Redirect to the original destination or fallback to Index
+            return LocalRedirect(returnUrl);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using cinema_cs.Data;
@@ -11,9 +12,11 @@ using cinema_cs.Data;
 namespace cinema_cs.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250531165738_PriceTiers")]
+    partial class PriceTiers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -197,12 +200,6 @@ namespace cinema_cs.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("MaxDaysBefore")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MinDaysBefore")
-                        .HasColumnType("integer");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
@@ -216,8 +213,6 @@ namespace cinema_cs.Migrations
                             Id = 1,
                             Description = "screening",
                             Label = "Same day",
-                            MaxDaysBefore = 0,
-                            MinDaysBefore = -1,
                             Price = 31.50m
                         },
                         new
@@ -225,8 +220,6 @@ namespace cinema_cs.Migrations
                             Id = 2,
                             Description = "ahead",
                             Label = "1–2 days",
-                            MaxDaysBefore = 2,
-                            MinDaysBefore = 1,
                             Price = 29.50m
                         },
                         new
@@ -234,8 +227,6 @@ namespace cinema_cs.Migrations
                             Id = 3,
                             Description = "ahead",
                             Label = "3–4 days",
-                            MaxDaysBefore = 4,
-                            MinDaysBefore = 3,
                             Price = 27.50m
                         },
                         new
@@ -243,8 +234,6 @@ namespace cinema_cs.Migrations
                             Id = 4,
                             Description = "ahead",
                             Label = "5+ days",
-                            MaxDaysBefore = 8,
-                            MinDaysBefore = 5,
                             Price = 23.50m
                         });
                 });

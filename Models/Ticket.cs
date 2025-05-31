@@ -16,10 +16,10 @@ namespace cinema_cs.Models
 
         public string OwnerId { get; set; } = default!;
 
-        public required Screening Screening { get; set; }
+        public Screening Screening { get; set; }
 
-        public required Seat Seat { get; set; }
+        public Seat Seat { get; set; }
 
-        public required User Owner { get; set; }
+        public User Owner { get; set; }
     }
 }

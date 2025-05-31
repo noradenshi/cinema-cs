@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Home";
     var today = DateTime.Today;
+    var now = DateTime.Now;
 }
 
 <div class="container d-flex justify-content-center py-5 text-light">
@@ -37,9 +38,13 @@
                             <td>
                                 @foreach (var screening in movie.Screenings)
                                 {
-                                    <a href="@Url.Page("Screening", new { id = screening.Id })"
-                                       class="btn btn-sm btn-outline-light me-1 mb-1"
-                                       style="min-width: 90pt;">
+                                    var isPast = screening.Date <= now;
+                                    <a asp-page="/Screening"
+                                       asp-route-id="@screening.Id"
+                                       class="btn btn-sm btn-outline-light me-1 mb-1 @(isPast ? "disabled btn-secondary" : "")"
+                                       style="min-width: 90pt;"
+                                       tabindex="@(isPast ? "-1" : null)"
+                                       aria-disabled="@(isPast ? "true" : null)">
                                         <big>@screening.Date.ToString("HH:mm")</big>
                                         <div><small>@screening.Type</small></div>
                                     </a>

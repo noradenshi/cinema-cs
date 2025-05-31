@@ -31,6 +31,25 @@ namespace cinema_cs.Data
             context.Rooms.AddRange(rooms);
             context.SaveChanges();
 
+            var seats = new List<Seat>();
+            foreach (var room in rooms)
+            {
+                for (char row = 'A'; row <= 'D'; row++) // Rows A to D inclusive
+                {
+                    for (int number = 1; number <= 10; number++) // Seat numbers 1 to 10
+                    {
+                        seats.Add(new Seat
+                        {
+                            RoomId = room.Id,
+                            Row = row.ToString(),
+                            Number = number
+                        });
+                    }
+                }
+            }
+            context.Seats.AddRange(seats);
+            context.SaveChanges();
+
             // --- ACTIVE MOVIES (10 released this week or earlier) ---
             var now = DateTime.UtcNow;
             var activeMovies = new List<Movie>();

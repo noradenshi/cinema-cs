@@ -6,9 +6,17 @@
 
 <div class="container d-flex justify-content-center py-5 text-light">
     <div class="w-100" style="max-width: 400px;">
-        <h2 class="text-center mb-4">Login</h2>
-
+        <h1 class="text-center display-5 mb-5">Login</h1>
+        @if (ViewContext.HttpContext.Request.Query["reason"] == "login-required")
+        {
+            <div class="alert alert-warning">
+                You must be logged in to access that page.
+            </div>
+        }
         <form method="post" class="form p-4 rounded shadow-sm">
+            <input type="hidden" name="returnUrl" value="@ViewContext.HttpContext.Request.Query["returnUrl"]" />
+            <div asp-validation-summary="All" class="text-danger"></div>
+
             <div class="mb-3">
                 <label asp-for="Input.Email" class="form-label">Email</label>
                 <input asp-for="Input.Email" class="form-control bg-dark text-light" />
@@ -26,7 +34,13 @@
             </div>
 
             <div class="text-center mt-3">
-                <a href="/Register" class="link-light">Don't have an account? Register</a>
+                @{
+                    var returnUrl = ViewContext.HttpContext.Request.Query["returnUrl"].ToString();
+                }
+                <p>
+                    Don't have an account?
+                    <a href="/Register?returnUrl=@returnUrl" class="link-light">Register here</a>
+                </p>
             </div>
         </form>
     </div>

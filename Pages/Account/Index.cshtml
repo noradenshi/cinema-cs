@@ -1,0 +1,88 @@
+@page
+@model cinema_cs.Pages.Account.AccountModel
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<cinema_cs.Models.User> UserManager
+@inject SignInManager<cinema_cs.Models.User> SignInManager
+@{
+    ViewData["Title"] = "Account";
+}
+
+<div class="container py-5 text-light">
+    <h2>Account</h2>
+    <hr />
+
+    @if (Model.StatusMessage != null)
+    {
+        <div class="alert alert-info">@Model.StatusMessage</div>
+    }
+
+    <div class="row">
+        <!-- Account Details -->
+        <div class="col-md-6 mb-4">
+            <form method="post">
+                <div class="mb-3">
+                    <label asp-for="Input.Name" class="form-label">First Name</label>
+                    <input asp-for="Input.Name" class="form-control" />
+                    <span asp-validation-for="Input.Name" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.Surname" class="form-label">Last Name</label>
+                    <input asp-for="Input.Surname" class="form-control" />
+                    <span asp-validation-for="Input.Surname" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.Email" class="form-label">Email</label>
+                    <input asp-for="Input.Email" class="form-control" disabled />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Input.Phone" class="form-label">Phone</label>
+                    <input asp-for="Input.Phone" class="form-control" />
+                    <span asp-validation-for="Input.Phone" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+        </div>
+
+        <!-- Password Change -->
+        <div class="col-md-6 mb-4">
+            <h4>Change Password</h4>
+            <form method="post" asp-page-handler="ChangePassword">
+                <div class="mb-3">
+                    <label asp-for="PasswordInput.CurrentPassword" class="form-label">Current Password</label>
+                    <input asp-for="PasswordInput.CurrentPassword" class="form-control" type="password" />
+                    <span asp-validation-for="PasswordInput.CurrentPassword" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="PasswordInput.NewPassword" class="form-label">New Password</label>
+                    <input asp-for="PasswordInput.NewPassword" class="form-control" type="password" />
+                    <span asp-validation-for="PasswordInput.NewPassword" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="PasswordInput.ConfirmPassword" class="form-label">Confirm New Password</label>
+                    <input asp-for="PasswordInput.ConfirmPassword" class="form-control" type="password" />
+                    <span asp-validation-for="PasswordInput.ConfirmPassword" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-warning">Change Password</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Account Deletion -->
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Delete Account</h4>
+            <form method="post" asp-page-handler="Delete">
+                <div class="mb-3">
+                    <label asp-for="DeletePassword" class="form-label">Confirm Password</label>
+                    <input asp-for="DeletePassword" class="form-control" type="password" />
+                    <span asp-validation-for="DeletePassword" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete your account?');">Delete Account</button>
+            </form>
+        </div>
+    </div>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</div>

@@ -22,6 +22,19 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Login";
+    //   options.AccessDeniedPath = "/AccessDenied"; // Optional
+    //
+    options.Events.OnRedirectToLogin = context =>
+    {
+        var returnUrl = context.Request.Path + context.Request.QueryString;
+        context.Response.Redirect($"/Login?returnUrl={Uri.EscapeDataString(returnUrl)}&reason=login-required");
+        return Task.CompletedTask;
+    };
+});
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddRazorPages();

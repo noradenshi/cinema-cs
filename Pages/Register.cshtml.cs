@@ -10,13 +10,11 @@ namespace cinema_cs.Pages
     {
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
-        private readonly ILogger<RegisterModel> _logger;
 
-        public RegisterModel(SignInManager<User> signInManager, UserManager<User> userManager, ILogger<RegisterModel> logger)
+        public RegisterModel(SignInManager<User> signInManager, UserManager<User> userManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            _logger = logger;
         }
 
         [BindProperty]
@@ -51,8 +49,10 @@ namespace cinema_cs.Pages
             public string ConfirmPassword { get; set; } = string.Empty;
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
         {
+            returnUrl ??= Url.Content("~/");
+
             if (!ModelState.IsValid)
                 return Page();
 
@@ -74,20 +74,19 @@ namespace cinema_cs.Pages
             };
 
             var result = await _userManager.CreateAsync(user, Input.Password);
-            _logger.LogInformation($"User creation succeeded? {result.Succeeded}");
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
-                    _logger.LogWarning($"User creation error: {error.Description}");
                 }
                 return Page();
             }
 
-            _logger.LogInformation("User created successfully: {Email}", Input.Email);
+            // Automatically sign in the user after successful registration
+            await _signInManager.SignInAsync(user, isPersistent: false);
 
-            return RedirectToPage("/Login");
+            return LocalRedirect(returnUrl);
         }
     }
 }

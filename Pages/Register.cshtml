@@ -6,9 +6,10 @@
 
 <div class="container d-flex justify-content-center py-5 text-light">
     <div class="w-100" style="max-width: 500px;">
-        <h2 class="text-center mb-4">Create Account</h2>
+        <h1 class="text-center display-5 mb-5">Create an account</h1>
 
         <form method="post" class="form p-4 rounded shadow-sm">
+            <input type="hidden" name="returnUrl" value="@ViewContext.HttpContext.Request.Query["returnUrl"]" />
             <div asp-validation-summary="All" class="text-danger"></div>
 
             <div class="mb-3">
@@ -52,7 +53,13 @@
             </div>
 
             <div class="text-center mt-3">
-                <a href="/Login" class="link-light">Already have an account? Login</a>
+                @{
+                    var returnUrl = ViewContext.HttpContext.Request.Query["returnUrl"].ToString();
+                }
+                <p>
+                    Already have an account?
+                    <a href="/Login?returnUrl=@returnUrl" class="link-light">Login here</a>
+                </p>
             </div>
         </form>
     </div>
