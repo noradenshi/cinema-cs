@@ -49,23 +49,6 @@ namespace cinema_cs.Pages.Admin
             Users = query.ToList();
         }
 
-        public async Task<IActionResult> OnPostAddUserAsync(string password)
-        {
-            if (!ModelState.IsValid)
-                return Page();
-
-            var result = await _userManager.CreateAsync(User, password);
-
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
-                    ModelState.AddModelError(string.Empty, error.Description);
-                return Page();
-            }
-
-            return RedirectToPage();
-        }
-
         public async Task<IActionResult> OnPostEditUserAsync()
         {
             var userToUpdate = await _userManager.FindByIdAsync(User.Id);
@@ -76,7 +59,7 @@ namespace cinema_cs.Pages.Admin
             userToUpdate.UserName = User.Email;
             userToUpdate.Name = User.Name;
             userToUpdate.Surname = User.Surname;
-            userToUpdate.Phone= User.Phone;
+            userToUpdate.Phone = User.Phone;
 
             var result = await _userManager.UpdateAsync(userToUpdate);
 
