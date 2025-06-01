@@ -4,7 +4,7 @@
     ViewData["Title"] = "Upcoming Movies";
 
     var moviesByMonth = Model.UpcomingMovies
-        .GroupBy(m => new { m.Premiere.Year, m.Premiere.Month })
+        .GroupBy(m => new { m.Premiere.ToLocalTime().Year, m.Premiere.ToLocalTime().Month })
         .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month);
 }
 
@@ -24,7 +24,7 @@
                     <div style="movie-card-left">
                         <h3>@movie.Title</h3>
                         <p>
-                            📅 <strong>Premiere:</strong> @movie.Premiere.ToString("d")<br />
+                            📅 <strong>Premiere:</strong> @movie.Premiere.ToLocalTime().ToString("d")<br />
                             ⏱️ <strong>Duration:</strong> @movie.Length min
                         </p>
                     </div>

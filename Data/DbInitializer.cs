@@ -1,11 +1,12 @@
 using System.Text.Json;
 using cinema_cs.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace cinema_cs.Data
 {
     public static class DbInitializer
     {
-        public static async Task SeedAsync(AppDbContext context)
+        public static async Task SeedAsync(IServiceProvider serviceProvider, AppDbContext context)
         {
             if (context.Movies.Any())
                 return; // DB has been seeded
@@ -17,6 +18,39 @@ namespace cinema_cs.Data
                 throw new Exception("No movies found in JSON or deserialization failed.");
 
             context.Movies.AddRange(movies);
+
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+
+            var adminRole = "Admin";
+            if (!await roleManager.RoleExistsAsync(adminRole))
+            {
+                await roleManager.CreateAsync(new IdentityRole(adminRole));
+            }
+
+            var adminEmail = "admin@admin";
+            var admin = new User
+            {
+                Name = "Admin",
+                Surname = "Adminski",
+                Phone = "000000000",
+                Email = adminEmail,
+                UserName = adminEmail
+            };
+
+            var result = await userManager.CreateAsync(admin, "*()890Cs");
+            if (!result.Succeeded)
+            {
+                throw new Exception("Admin creation failed: " +
+                    string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+
+            await context.SaveChangesAsync();
+
+            if (!await userManager.IsInRoleAsync(admin, adminRole))
+            {
+                await userManager.AddToRoleAsync(admin, adminRole);
+            }
 
             var rooms = new List<Room> { new(), new(), new() };
             context.Rooms.AddRange(rooms);

@@ -1,0 +1,212 @@
+@page
+@model cinema_cs.Pages.Admin.ScreeningsModel
+@using cinema_cs.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Manage Screenings";
+}
+
+@using System.Text.Json
+<script>
+    const screeningSlots = @Html.Raw(JsonSerializer.Serialize(Model.ScreeningSlots));
+</script>
+
+<h1 class="mb-4">Manage Screenings</h1>
+
+<form method="get" class="container gap-4 g-3 mb-4 d-flex flex-wrap justify-content-center">
+    <div>
+        <label class="form-label">Filter by Date</label>
+        <input class="form-control" type="date" name="Date" value="@Model.Date?.ToString("yyyy-MM-dd")" onchange="this.form.submit()" />
+    </div>
+    <div>
+        <label class="form-label">Filter by Movie</label>
+        <select class="form-select" name="MovieId" onchange="this.form.submit()">
+            <option value="">All Movies</option>
+            @foreach (var movie in Model.Movies)
+            {
+                <option value="@movie.Id" selected="@(movie.Id == Model.MovieId)">
+                    @movie.Title
+                </option>
+            }
+        </select>
+    </div>
+    <div>
+        <label class="form-label">Filter by Room</label>
+        <select class="form-select" name="RoomId" onchange="this.form.submit()">
+            <option value="">All Rooms</option>
+            @foreach (var room in Model.Rooms)
+            {
+                <option value="@room.Id" selected="@(room.Id == Model.RoomId)">
+                    @room.Id
+                </option>
+            }
+        </select>
+    </div>
+</form>
+
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addScreeningModal">Add New Screening</button>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Movie</th>
+            <th>Room</th>
+            <th>Start Time</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var screening in Model.Screenings)
+        {
+            <tr>
+                <td>@screening.Movie.Title</td>
+                <td>@screening.RoomId</td>
+                <td>@screening.Date.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                <td>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editScreeningModal-@screening.Id">Edit</button>
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@screening.Id" class="d-inline">
+                            <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Are you sure you want to delete this screening?');">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Edit Modal -->
+            <div class="modal fade" id="editScreeningModal-@screening.Id" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form method="post" asp-page-handler="Edit">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Screening</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="Screening.Id" value="@screening.Id" />
+                                <div class="mb-2">
+                                    <label>Movie</label>
+                                    <select class="form-control" name="Screening.MovieId">
+                                        @foreach (var movie in Model.Movies)
+                                        {
+                                            <option value="@movie.Id" data-length="@movie.Length" selected="@(movie.Id == screening.MovieId)">
+                                                @movie.Title
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="mb-2">
+                                    <label>Start Time</label>
+                                    <input class="form-control" name="Screening.Date" type="datetime-local" value="@screening.Date.ToLocalTime().ToString("yyyy-MM-ddTHH:mm")" required />
+                                </div>
+                                <div class="mb-2">
+                                    <label>Room</label>
+                                    <select class="form-control" name="Screening.RoomId">
+                                        @foreach (var room in Model.Rooms)
+                                        {
+                                            <option value="@room.Id" selected="@(room.Id == screening.RoomId)">
+                                                @room.Id
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="text-danger me-auto" id="Screening-conflict-@screening.Id" style="display:none;">Room in use</div>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button class="btn btn-primary" type="submit" id="Screening-submit-@screening.Id">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </tbody>
+</table>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addScreeningModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Add">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Screening</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label>Movie</label>
+                        <select class="form-control" name="Screening.MovieId">
+                            @foreach (var movie in Model.Movies)
+                            {
+                                <option value="@movie.Id" data-length="@movie.Length">@movie.Title</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label>Start Time</label>
+                        <input class="form-control" name="Screening.Date" type="datetime-local" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Room</label>
+                        <select class="form-control" name="Screening.RoomId">
+                            @foreach (var room in Model.Rooms)
+                            {
+                                <option value="@room.Id">@room.Id</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="text-danger me-auto" id="Screening-conflict-Add" style="display:none;">Room in use</div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success" type="submit" id="Screening-submit-Add">Add Screening</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function checkConflict(modalId, id) {
+        const prefix = 'Screening';
+        const base = document.querySelector(modalId);
+        if (!base) return;
+
+        const dateInput = base.querySelector(`[name="${prefix}.Date"]`);
+        const roomSelect = base.querySelector(`[name="${prefix}.RoomId"]`);
+        const movieSelect = base.querySelector(`[name="${prefix}.MovieId"]`);
+        const button = base.querySelector(`#${prefix}-submit-${id}`);
+        const warning = base.querySelector(`#${prefix}-conflict-${id}`);
+
+        if (!dateInput || !roomSelect || !movieSelect || !button || !warning) return;
+
+        const selectedRoom = parseInt(roomSelect.value);
+        const selectedMovie = parseInt(movieSelect.value);
+        const startTime = new Date(dateInput.value);
+        const movie = [...movieSelect.options].find(opt => parseInt(opt.value) === selectedMovie);
+        const length = parseInt(movie?.dataset.length || "0");
+        const endTime = new Date(startTime.getTime() + length * 60000);
+
+        let conflict = screeningSlots.some(slot =>
+            slot.RoomId === selectedRoom &&
+            !(new Date(slot.End) <= startTime || new Date(slot.Start) >= endTime)
+        );
+
+        button.disabled = conflict;
+        warning.style.display = conflict ? 'block' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const ids = ['Add', ...@Html.Raw(Json.Serialize(Model.Screenings.Select(s => s.Id)))];
+
+        ids.forEach(id => {
+            const modalId = id === 'Add' ? '#addScreeningModal' : `#editScreeningModal-${id}`;
+            ['Date', 'RoomId', 'MovieId'].forEach(field => {
+                const el = document.querySelector(`${modalId} [name="Screening.${field}"]`);
+                if (el) {
+                    el.addEventListener('change', () => checkConflict(modalId, id));
+                }
+            });
+        });
+    });
+</script>

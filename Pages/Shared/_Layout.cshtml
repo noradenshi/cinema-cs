@@ -28,11 +28,21 @@
                     <ul class="navbar-nav ms-auto">
                         @if (SignInManager.IsSignedIn(User))
                         {
+                            var isAdmin = User.IsInRole("Admin");
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     @UserManager.GetUserName(User)
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    @if (isAdmin)
+                                    {
+                                        <li><h6 class="dropdown-header">Admin</h6></li>
+                                        <li><a class="dropdown-item" href="/Admin/Movies">Manage Movies</a></li>
+                                        <li><a class="dropdown-item" href="/Admin/Screenings">Manage Screenings</a></li>
+                                        <li><a class="dropdown-item" href="/Admin/Users">Manage Users</a></li>
+                                        <li><hr class="dropdown-divider" /></li>
+                                    }
+
                                     <li><a class="dropdown-item" href="/Account">Account</a></li>
                                     <li><a class="dropdown-item" href="/Account/Tickets">My Tickets</a></li>
                                     <li>
@@ -74,7 +84,7 @@
         </div>
     </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script asp-src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

@@ -37,7 +37,11 @@
                     {
                         if (!movie.Screenings.Any()) continue;
                         <tr>
-                            <td class="fw-semibold">@movie.Title</td>
+                            <td style="width: 300px;">
+                                <h5>@movie.Title</h5>
+                                <p>Length: @movie.Length minutes</p>
+                                <small>@movie.Description</small>
+                            </td>
                             <td>
                                 @foreach (var screening in movie.Screenings)
                                 {

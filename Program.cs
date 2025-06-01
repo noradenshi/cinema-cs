@@ -5,12 +5,6 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure logging (optional, for extra control)
-builder.Logging.ClearProviders(); // Optional: clear default providers if you want only specific ones
-builder.Logging.AddConsole();     // Add console logger
-builder.Logging.AddDebug();       // Add debug logger (useful in Visual Studio)
-builder.Logging.SetMinimumLevel(LogLevel.Information); // Adjust as needed
-
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -25,8 +19,8 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Login";
-    //   options.AccessDeniedPath = "/AccessDenied"; // Optional
-    //
+    // options.AccessDeniedPath = "/AccessDenied";
+
     options.Events.OnRedirectToLogin = context =>
     {
         var returnUrl = context.Request.Path + context.Request.QueryString;
@@ -43,9 +37,11 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var service = scope.ServiceProvider;
+    var context = service.GetRequiredService<AppDbContext>();
     context.Database.Migrate(); // <-- Ensure migrations are applied at startup
-    await DbInitializer.SeedAsync(context);
+
+    await DbInitializer.SeedAsync(service, context);
 }
 
 // Configure the HTTP request pipeline.
