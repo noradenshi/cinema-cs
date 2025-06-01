@@ -44,7 +44,7 @@ namespace cinema_cs.Data
             var screenings = new List<Screening>();
             var random = new Random();
             var today = DateTime.Today;
-            int daysToGenerate = 7; // adjust as needed
+            int daysToGenerate = 7;
 
             for (int dayOffset = 0; dayOffset < daysToGenerate; dayOffset++)
             {
@@ -52,34 +52,50 @@ namespace cinema_cs.Data
 
                 // Get only premiered movies
                 var premieredMovies = movies
-                    .Where(m => m.Premiere <= currentDate.Date)
+                    .Where(m => m.Premiere <= currentDate)
                     .ToList();
+
+                // Dictionary to track scheduled movies by hour (e.g., 13 for 1 PM)
+                var scheduledHours = new Dictionary<int, HashSet<int>>();
 
                 foreach (var room in rooms)
                 {
-                    var currentTime = currentDate.AddHours(10); // start at 10:00
+                    var currentTime = currentDate.AddHours(9); // reset per room/day
+                    var dayEndTime = currentDate.AddHours(24);
 
-                    while (currentTime.Hour < 22)
+                    while (true)
                     {
-                        // Pick a random movie that fits
-                        var movie = premieredMovies[random.Next(premieredMovies.Count)];
+                        int hour = currentTime.Hour;
 
-                        // Screening end time with 1 hour break
-                        var nextAvailableTime = currentTime.AddMinutes(movie.Length + 60);
+                        // Filter out movies already scheduled at this hour
+                        var availableMovies = premieredMovies
+                            .Where(m => !scheduledHours.TryGetValue(hour, out var ids) || !ids.Contains(m.Id))
+                            .ToList();
 
-                        // If next screening would exceed 22:00, break
-                        if (nextAvailableTime.Hour >= 22 && nextAvailableTime.Minute > 0)
+                        if (!availableMovies.Any())
+                            break; // no available movies left for this time slot
+
+                        // Pick one at random
+                        var movie = availableMovies[random.Next(availableMovies.Count)];
+                        var endTimeWithBreak = currentTime.AddMinutes(movie.Length + 60);
+
+                        if (endTimeWithBreak > dayEndTime)
                             break;
+
+                        // Register movie as scheduled for this hour
+                        if (!scheduledHours.ContainsKey(hour))
+                            scheduledHours[hour] = new HashSet<int>();
+                        scheduledHours[hour].Add(movie.Id);
 
                         screenings.Add(new Screening
                         {
                             MovieId = movie.Id,
                             RoomId = room.Id,
-                            Type = (ScreeningType)random.Next(0, 3), // Original, Dubbed, Subtitled
+                            Type = (ScreeningType)random.Next(0, 3),
                             Date = currentTime
                         });
 
-                        currentTime = nextAvailableTime;
+                        currentTime = endTimeWithBreak;
                     }
                 }
             }

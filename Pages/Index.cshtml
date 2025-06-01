@@ -41,14 +41,14 @@
                             <td>
                                 @foreach (var screening in movie.Screenings)
                                 {
-                                    var isPast = screening.Date <= now;
+                                    var isPast = screening.Date.ToLocalTime() <= now;
                                     <a asp-page="/Screening"
                                        asp-route-id="@screening.Id"
                                        class="btn btn-sm btn-outline-light me-1 mb-1 @(isPast ? "disabled btn-secondary" : "")"
                                        style="min-width: 90pt;"
                                        tabindex="@(isPast ? "-1" : null)"
                                        aria-disabled="@(isPast ? "true" : null)">
-                                        <big>@screening.Date.ToString("HH:mm")</big>
+                                        <big>@screening.Date.ToLocalTime().ToString("HH:mm")</big>
                                         <div><small>@screening.Type</small></div>
                                     </a>
                                 }

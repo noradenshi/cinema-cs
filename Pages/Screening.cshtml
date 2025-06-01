@@ -20,11 +20,13 @@
                                 var isTaken = Model.TakenSeatIds.Contains(seatId);
                                 var label = $"{seat.Row}{seat.Number}";
                                 <div class="seat">
-                                    <input type="checkbox" name="SelectedSeats"
-                                           value="@seatId"
-                                           id="seat-@seatId"
-                                           class="btn-check"
-                                           @(isTaken ? "disabled data-taken=\"true\"" : "") />
+                                    <input type="checkbox"
+                                        name="SelectedSeats"
+                                        value="@seat.Id"
+                                        id="seat-@seat.Id"
+                                        class="btn-check"
+                                        data-taken="@isTaken"
+                                        @(isTaken ? "disabled" : "") />
                                     <label class="btn btn-sm @(isTaken ? "btn-secondary" : "btn-outline-light")"
                                            for="seat-@seatId"
                                            style="min-width: 45px;">
@@ -105,7 +107,7 @@
 
         checkboxes.forEach(cb => {
             // Determine if this checkbox is for a seat that's permanently disabled (already taken)
-            const isTaken = cb.dataset.taken === "true";
+            const isTaken = cb.dataset.taken?.toLowerCase() === "true";
 
             // Only modify if it's not taken
             if (!isTaken) {
