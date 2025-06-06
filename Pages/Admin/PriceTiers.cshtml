@@ -1,0 +1,125 @@
+@page
+@model cinema_cs.Pages.Admin.PriceTiersModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Manage Price Tiers";
+}
+
+<h1 class="mb-4">Manage Price Tiers</h1>
+
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Add New Price Tier</button>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Label</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Min Days Before</th>
+            <th>Max Days Before</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pt in Model.PriceTiers)
+        {
+            <tr>
+                <td>@pt.Label</td>
+                <td>@pt.Description</td>
+                <td>@pt.Price.ToString("C")</td>
+                <td>@pt.MinDaysBefore</td>
+                <td>@pt.MaxDaysBefore</td>
+                <td>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal-@pt.Id">Edit</button>
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@pt.Id" class="d-inline">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this price tier?');">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Edit Modal -->
+            <div class="modal fade" id="editModal-@pt.Id" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form method="post" asp-page-handler="Edit">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Price Tier</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="PriceTier.Id" value="@pt.Id" />
+                                <div class="mb-2">
+                                    <label>Label</label>
+                                    <input class="form-control" name="PriceTier.Label" value="@pt.Label" required />
+                                </div>
+                                <div class="mb-2">
+                                    <label>Description</label>
+                                    <textarea class="form-control" name="PriceTier.Description">@pt.Description</textarea>
+                                </div>
+                                <div class="mb-2">
+                                    <label>Price</label>
+                                    <input type="number" step="0.01" class="form-control" name="PriceTier.Price" value="@pt.Price" required />
+                                </div>
+                                <div class="mb-2">
+                                    <label>Min Days Before</label>
+                                    <input type="number" class="form-control" name="PriceTier.MinDaysBefore" value="@pt.MinDaysBefore" required />
+                                </div>
+                                <div class="mb-2">
+                                    <label>Max Days Before</label>
+                                    <input type="number" class="form-control" name="PriceTier.MaxDaysBefore" value="@pt.MaxDaysBefore" required />
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button class="btn btn-primary" type="submit">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </tbody>
+</table>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Add">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Price Tier</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label>Label</label>
+                        <input class="form-control" name="PriceTier.Label" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Description</label>
+                        <textarea class="form-control" name="PriceTier.Description"></textarea>
+                    </div>
+                    <div class="mb-2">
+                        <label>Price</label>
+                        <input type="number" step="0.01" class="form-control" name="PriceTier.Price" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Min Days Before</label>
+                        <input type="number" class="form-control" name="PriceTier.MinDaysBefore" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Max Days Before</label>
+                        <input type="number" class="form-control" name="PriceTier.MaxDaysBefore" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success" type="submit">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

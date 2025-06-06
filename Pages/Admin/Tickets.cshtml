@@ -1,0 +1,78 @@
+@page
+@model cinema_cs.Pages.Admin.TicketsModel
+@using cinema_cs.Models
+@{
+    ViewData["Title"] = "Manage Tickets";
+}
+
+<h1 class="mb-4">Ticket Overview</h1>
+
+<form method="get" class="container gap-4 g-3 mb-4 d-flex flex-wrap justify-content-center">
+    <div>
+        <label>Filter by Email</label>
+        <input class="form-control" name="EmailFilter" value="@Model.EmailFilter" />
+    </div>
+    <div>
+        <label>Filter by Movie</label>
+        <select class="form-select" name="MovieId" onchange="this.form.submit()">
+            <option value="">All Movies</option>
+            @foreach (var movie in Model.Movies)
+            {
+                <option value="@movie.Id" selected="@(movie.Id == Model.MovieId)">
+                    @movie.Title
+                </option>
+            }
+        </select>
+    </div>
+    <div>
+        <label>Filter by Date</label>
+        <input class="form-control" type="date" name="DateFilter" value="@Model.DateFilter?.ToString("yyyy-MM-dd")" />
+    </div>
+</form>
+
+@if (!Model.GroupedTickets.Any())
+{
+    <div class="alert alert-info">No tickets match the filter criteria.</div>
+}
+else
+{
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>User</th>
+                <th>Screening Info</th>
+                <th>Room ID</th>
+                <th>Seats</th>
+                <th>Total Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var group in Model.GroupedTickets)
+            {
+                <tr>
+                    <td>
+                        <strong>@group.User.UserName</strong><br />
+                    </td>
+                    <td>
+                        <div>
+                            <strong>@group.Screening.Movie?.Title</strong><br />
+                            @group.Screening.Date.ToString("g")<br />
+                            Type: @group.Screening.Type
+                        </div>
+                    </td>
+                    <td>@group.Screening.RoomId</td>
+                    <td>@string.Join(", ", group.SeatNames)</td>
+                    <td>@group.TotalPrice.ToString("C")</td>
+                    <td>
+                        <form method="post" asp-page-handler="Refund">
+                            <input type="hidden" name="userId" value="@group.UserId" />
+                            <input type="hidden" name="screeningId" value="@group.ScreeningId" />
+                            <button class="btn btn-danger btn-sm" onclick="return confirm('Refund all tickets for this user and screening?');">Refund</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
